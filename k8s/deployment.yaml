@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bnr-dashboard
+  namespace: default
+  labels:
+    app: bnr-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bnr-dashboard
+  template:
+    metadata:
+      labels:
+        app: bnr-dashboard
+    spec:
+      containers:
+        - name: bnr-dashboard
+          image: mariuseu/bnr-dashboard:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
