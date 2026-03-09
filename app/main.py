@@ -60,7 +60,7 @@ async def fetch_football():
     try:
         async with httpx.AsyncClient() as client:
             r = await client.get(
-                "https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4683",
+                "https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4691",
                 timeout=10
             )
         data = r.json()
