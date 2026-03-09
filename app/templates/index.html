@@ -1,199 +1,272 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNR Dashboard</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f1117;
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 2rem;
-        }
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            color: #f0b429;
-            margin-bottom: 0.3rem;
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .card {
-            background: #1a1d2e;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #2a2d3e;
-        }
-        .card h2 {
-            font-size: 1rem;
-            color: #f0b429;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .rates-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.8rem;
-        }
-        .rate-item {
-            background: #0f1117;
-            border-radius: 8px;
-            padding: 0.8rem;
-            text-align: center;
-        }
-        .rate-item .currency {
-            font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 0.3rem;
-        }
-        .rate-item .value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #fff;
-        }
-        .rate-item .unit {
-            font-size: 0.7rem;
-            color: #555;
-        }
-        .metals-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-        }
-        .metal-item {
-            background: #0f1117;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-        }
-        .metal-item .metal-name {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 0.4rem;
-        }
-        .metal-item .metal-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .gold { color: #f0b429; }
-        .xdr { color: #60a5fa; }
-        .news-list { list-style: none; }
-        .news-list li {
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #2a2d3e;
-        }
-        .news-list li:last-child { border-bottom: none; }
-        .news-list a {
-            color: #e0e0e0;
-            text-decoration: none;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-        .news-list a:hover { color: #f0b429; }
-        .news-date {
-            font-size: 0.75rem;
-            color: #555;
-            margin-top: 0.2rem;
-        }
-        .news-card { grid-column: span 2; }
-        .footer {
-            text-align: center;
-            color: #444;
-            font-size: 0.8rem;
-            margin-top: 2rem;
-        }
-        .bnr-badge {
-            display: inline-block;
-            background: #1a2e1a;
-            color: #4ade80;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-        }
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-            .news-card { grid-column: span 1; }
-        }
-    </style>
-    <meta http-equiv="refresh" content="1800">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="refresh" content="1800"/>
+<title>BNR Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f2f2;
+  --surface:#fff;
+  --border:#e0e0e0;
+  --text:#1a1a1a;
+  --text2:#555;
+  --text3:#999;
+  --accent:#f5a623;
+  --accent2:#e8430a;
+  --font:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:3px solid var(--accent);padding:0 1.5rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.topbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px;gap:1rem}
+.site-logo{font-size:1.3rem;font-weight:700;letter-spacing:-0.03em;color:var(--text);text-decoration:none;white-space:nowrap}
+.site-logo em{color:var(--accent);font-style:normal}
+.nav{display:flex;gap:0;list-style:none}
+.nav a{font-size:0.78rem;font-weight:500;color:var(--text2);text-decoration:none;padding:0 0.9rem;line-height:52px;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .15s,border-color .15s;white-space:nowrap}
+.nav a:hover,.nav a.active{color:var(--text);border-color:var(--accent)}
+.topbar-date{font-family:var(--mono);font-size:0.62rem;color:var(--text3);white-space:nowrap;flex-shrink:0}
+@media(max-width:700px){.nav{display:none}}
+
+/* TICKER */
+.ticker{background:var(--accent2);color:#fff;padding:0.4rem 0;overflow:hidden}
+.ticker-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:0 1.5rem}
+.ticker-label{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:rgba(0,0,0,.2);padding:0.2rem 0.5rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.ticker-text{font-size:0.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 4rem;display:grid;grid-template-columns:1fr 320px;gap:1.5rem}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* SECTION HEAD */
+.section-head{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:0.65rem;border-bottom:2px solid var(--text)}
+.section-head h2{font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+.section-head .count{font-size:0.65rem;font-family:var(--mono);color:var(--text3);margin-left:auto}
+
+/* RATES */
+.rates-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem}
+.rates-header{background:var(--text);color:#fff;padding:0.65rem 1rem;display:flex;align-items:center;justify-content:space-between}
+.rates-header span{font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.rates-header small{font-family:var(--mono);font-size:0.6rem;opacity:.5}
+.rates-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.rate-cell{padding:0.9rem 0.7rem;text-align:center;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .15s;cursor:default}
+.rate-cell:hover{background:#fafafa}
+.rate-cell:nth-child(3n){border-right:none}
+.rate-cell:nth-last-child(-n+3){border-bottom:none}
+.rc-cur{font-family:var(--mono);font-size:0.6rem;font-weight:500;color:var(--text3);letter-spacing:0.08em;margin-bottom:0.3rem}
+.rc-val{font-family:var(--mono);font-size:1.15rem;font-weight:500;color:var(--text);letter-spacing:-0.02em;line-height:1}
+.rc-ron{font-family:var(--mono);font-size:0.52rem;color:var(--border);margin-top:0.2rem}
+
+/* METALS */
+.metals-strip{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem}
+.metal-card{border-radius:6px;padding:1rem 1.1rem;display:flex;align-items:center;gap:1rem;border:1px solid}
+.metal-card.gold{background:#fffbf0;border-color:#f5e0a0}
+.metal-card.xdr{background:#f0f5ff;border-color:#bdd0f5}
+.metal-icon{font-size:1.8rem;flex-shrink:0;line-height:1}
+.metal-name{font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.3rem}
+.gold .metal-name{color:#b8771a}
+.xdr  .metal-name{color:#1a4db8}
+.metal-val{font-family:var(--mono);font-size:1.4rem;font-weight:500;letter-spacing:-0.03em;line-height:1}
+.gold .metal-val{color:#b8771a}
+.xdr  .metal-val{color:#1a4db8}
+.metal-unit{font-family:var(--mono);font-size:0.55rem;opacity:.6;margin-left:2px}
+.metal-src{font-size:0.58rem;color:var(--text3);margin-top:0.25rem}
+
+/* NEWS */
+.news-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.news-item{display:flex;gap:0.9rem;padding:0.9rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:background .15s;cursor:pointer}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{background:#fafafa}
+.news-num{font-family:var(--mono);font-size:0.62rem;color:var(--border);flex-shrink:0;padding-top:3px;width:16px;text-align:right}
+.news-body{flex:1;min-width:0}
+.news-title{font-size:0.88rem;font-weight:500;color:var(--text);line-height:1.5;display:block;text-decoration:none;transition:color .15s}
+.news-item:hover .news-title{color:var(--accent2)}
+.news-meta{display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem}
+.news-source{font-size:0.6rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent2)}
+.news-dot{font-size:0.5rem;color:var(--border)}
+.news-time{font-family:var(--mono);font-size:0.6rem;color:var(--text3)}
+.news-arr{font-size:0.75rem;color:var(--border);flex-shrink:0;align-self:center;transition:color .15s}
+.news-item:hover .news-arr{color:var(--accent2)}
+.news-empty{padding:1rem;font-family:var(--mono);font-size:0.75rem;color:var(--text3)}
+
+/* SIDEBAR */
+.sidebar-widget{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.2rem}
+.widget-head{padding:0.6rem 0.9rem;border-bottom:1px solid var(--border);background:#fafafa;font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2)}
+.widget-body{padding:0.9rem}
+.sb-rates{list-style:none}
+.sb-rate{display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--border)}
+.sb-rate:last-child{border-bottom:none}
+.sb-cur{font-family:var(--mono);font-size:0.68rem;font-weight:500;color:var(--text2)}
+.sb-val{font-family:var(--mono);font-size:0.78rem;font-weight:500;color:var(--text)}
+.sb-ron{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-left:3px}
+.sb-metal{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)}
+.sb-metal:last-child{border-bottom:none}
+.sb-mname{font-size:0.72rem;font-weight:500}
+.sb-mval{font-family:var(--mono);font-size:0.78rem;font-weight:500}
+.sb-metal.gold .sb-mname,.sb-metal.gold .sb-mval{color:#b8771a}
+.sb-metal.xdr  .sb-mname,.sb-metal.xdr  .sb-mval{color:#1a4db8}
+.live-badge{display:inline-flex;align-items:center;gap:0.3rem;font-family:var(--mono);font-size:0.6rem;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:0.2rem 0.6rem;margin-bottom:0.8rem}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* FOOTER */
+.footer{background:var(--surface);border-top:1px solid var(--border);padding:1.2rem 1.5rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.footer-text{font-size:0.68rem;color:var(--text3)}
+.footer-mono{font-family:var(--mono);font-size:0.6rem;color:var(--text3)}
+</style>
 </head>
 <body>
-    <h1>🏦 BNR Dashboard</h1>
-    <p class="subtitle">Curs valutar BNR • {{ bnr_date }} • Actualizat: {{ updated }}</p>
 
-    <div class="grid">
-        <div class="card">
-            <h2>💱 Curs Valutar</h2>
-            <div class="rates-grid">
-                {% for currency, value in rates.items() %}
-                <div class="rate-item">
-                    <div class="currency">{{ currency }}</div>
-                    <div class="value">{{ value }}</div>
-                    <div class="unit">RON</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="site-logo" href="#">BNR<em>·</em>ro</a>
+    <ul class="nav">
+      <li><a href="#" class="active">Curs Valutar</a></li>
+      <li><a href="#">Metale</a></li>
+      <li><a href="#">Știri</a></li>
+    </ul>
+    <div class="topbar-date">{{ bnr_date }} · {{ updated }}</div>
+  </div>
+</div>
 
-        <div class="card">
-            <h2>🥇 Metale & DST</h2>
-            <div class="metals-grid">
-                <div class="metal-item">
-                    <div class="metal-name">Aur (XAU)</div>
-                    <div class="metal-value gold">
-                        {% if gold_ron %}{{ gold_ron }}
-                        <small style="font-size:0.7rem">RON/g</small>
-                        {% else %}N/A{% endif %}
-                    </div>
-                    <div class="bnr-badge">sursa: BNR oficial</div>
-                </div>
-                <div class="metal-item">
-                    <div class="metal-name">DST (XDR)</div>
-                    <div class="metal-value xdr">
-                        {% if xdr_ron %}{{ xdr_ron }}
-                        <small style="font-size:0.7rem">RON</small>
-                        {% else %}N/A{% endif %}
-                    </div>
-                    <div class="bnr-badge">sursa: BNR oficial</div>
-                </div>
-            </div>
-        </div>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-label">Live</span>
+    <span class="ticker-text">
+      {% for currency, value in rates.items() %}{{ currency }} {{ value }} RON &nbsp;·&nbsp; {% endfor %}
+      {% if gold_ron %}Aur {{ gold_ron }} RON/g &nbsp;·&nbsp; {% endif %}
+      Sursa: BNR oficial
+    </span>
+  </div>
+</div>
 
-        <div class="card news-card">
-            <h2>📰 Stiri Digi24</h2>
-            {% if news %}
-            <ul class="news-list">
-                {% for item in news %}
-                <li>
-                    <a href="{{ item.link }}" target="_blank">{{ item.title }}</a>
-                    <div class="news-date">{{ item.date }}</div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p style="color:#555">Stirile nu sunt disponibile momentan.</p>
-            {% endif %}
+<!-- MAIN -->
+<div class="main">
+  <div class="content">
+
+    <!-- RATES -->
+    <div class="rates-wrap">
+      <div class="rates-header">
+        <span>Curs Valutar BNR</span>
+        <small>{{ bnr_date }}</small>
+      </div>
+      <div class="rates-grid">
+        {% for currency, value in rates.items() %}
+        <div class="rate-cell">
+          <div class="rc-cur">{{ currency }}</div>
+          <div class="rc-val">{{ value }}</div>
+          <div class="rc-ron">RON</div>
         </div>
+        {% endfor %}
+      </div>
     </div>
 
-    <div class="footer">
-        BNR Dashboard • Surse: BNR oficial, Digi24 • Auto-refresh: 30 min
+    <!-- METALS -->
+    <div class="metals-strip">
+      <div class="metal-card gold">
+        <div class="metal-icon">🥇</div>
+        <div class="metal-info">
+          <div class="metal-name">Aur · XAU</div>
+          <div class="metal-val">
+            {% if gold_ron %}{{ gold_ron }}<span class="metal-unit">RON/g</span>{% else %}—{% endif %}
+          </div>
+          <div class="metal-src">Sursa: BNR oficial</div>
+        </div>
+      </div>
+      <div class="metal-card xdr">
+        <div class="metal-icon">🏦</div>
+        <div class="metal-info">
+          <div class="metal-name">DST · XDR</div>
+          <div class="metal-val">
+            {% if xdr_ron %}{{ xdr_ron }}<span class="metal-unit">RON</span>{% else %}—{% endif %}
+          </div>
+          <div class="metal-src">Sursa: BNR oficial</div>
+        </div>
+      </div>
     </div>
+
+    <!-- NEWS -->
+    <div class="section-head">
+      <h2>Știri Digi24</h2>
+      {% if news %}<span class="count">{{ news|length }} articole</span>{% endif %}
+    </div>
+    <div class="news-card">
+      {% if news %}
+        {% for item in news %}
+        <a class="news-item" href="{{ item.link }}" target="_blank" rel="noopener">
+          <span class="news-num">{{ loop.index }}</span>
+          <div class="news-body">
+            <span class="news-title">{{ item.title }}</span>
+            <div class="news-meta">
+              <span class="news-source">Digi24</span>
+              <span class="news-dot">●</span>
+              <span class="news-time">{{ item.date }}</span>
+            </div>
+          </div>
+          <span class="news-arr">›</span>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="news-empty">Știrile nu sunt disponibile momentan.</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="live-badge"><span class="live-dot"></span> Date actualizate</div>
+
+    <div class="sidebar-widget">
+      <div class="widget-head">Curs rapid</div>
+      <div class="widget-body">
+        <ul class="sb-rates">
+          {% for currency, value in rates.items() %}
+          <li class="sb-rate">
+            <span class="sb-cur">{{ currency }}</span>
+            <span><span class="sb-val">{{ value }}</span><span class="sb-ron">RON</span></span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="widget-head">Metale &amp; DST</div>
+      <div class="widget-body">
+        <div class="sb-metal gold">
+          <span class="sb-mname">🥇 Aur XAU</span>
+          <span class="sb-mval">{% if gold_ron %}{{ gold_ron }} <small style="font-size:.55rem;opacity:.6">RON/g</small>{% else %}—{% endif %}</span>
+        </div>
+        <div class="sb-metal xdr">
+          <span class="sb-mname">🏦 DST XDR</span>
+          <span class="sb-mval">{% if xdr_ron %}{{ xdr_ron }} <small style="font-size:.55rem;opacity:.6">RON</small>{% else %}—{% endif %}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-inner">
+    <span class="footer-text">BNR Dashboard · Surse: Banca Națională a României, Digi24</span>
+    <span class="footer-mono">⟳ auto-refresh 30 min</span>
+  </div>
+</div>
+
 </body>
 </html>
