@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 import httpx
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -68,7 +69,7 @@ async def index(request: Request):
         "gold_ron": gold_ron,
         "xdr_ron": xdr_ron,
         "news": news,
-        "updated": datetime.now().strftime("%d %b %Y, %H:%M")
+        "updated": datetime.now(ZoneInfo("Europe/Bucharest")).strftime("%d %b %Y, %H:%M")
     })
 
 @app.get("/health")
