@@ -117,6 +117,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
 .live-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* FOOTBALL */
+.football-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+@media(max-width:640px){.football-grid{grid-template-columns:1fr}}
+.football-widget{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.football-widget iframe{display:block;width:100%;border:none}
+
 /* FOOTER */
 .footer{background:var(--surface);border-top:1px solid var(--border);padding:1.2rem 1.5rem}
 .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
@@ -222,6 +228,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
       {% endif %}
     </div>
 
+    <!-- FOOTBALL -->
+    <div class="section-head" style="margin-top:1.5rem">
+      <h2>⚽ Fotbal Live</h2>
+    </div>
+    <div class="football-grid">
+      <div class="football-widget">
+        <div class="widget-head">Liga 1 Romania</div>
+        <iframe
+          src="https://widgets.sofascore.com/embed/tournament/238?widgetTheme=light"
+          height="500"
+          scrolling="no"
+          allowtransparency="true">
+        </iframe>
+      </div>
+      <div class="football-widget">
+        <div class="widget-head">UEFA Champions League</div>
+        <iframe
+          src="https://widgets.sofascore.com/embed/tournament/7?widgetTheme=light"
+          height="500"
+          scrolling="no"
+          allowtransparency="true">
+        </iframe>
+      </div>
+    </div>
+
   </div>
 
   <!-- SIDEBAR -->
@@ -255,6 +286,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
           <span class="sb-mval">{% if xdr_ron %}{{ xdr_ron }} <small style="font-size:.55rem;opacity:.6">RON</small>{% else %}—{% endif %}</span>
         </div>
       </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="widget-head">⚽ Liga 1 Scoruri</div>
+      <iframe
+        src="https://widgets.sofascore.com/embed/tournament/238?widgetTheme=light"
+        width="100%"
+        height="400"
+        style="border:none;display:block"
+        scrolling="no"
+        allowtransparency="true">
+      </iframe>
     </div>
 
   </div>
