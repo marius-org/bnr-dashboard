@@ -26,11 +26,10 @@ jobs:
           push: true
           tags: |
             mariuseu/bnr-dashboard:latest
-            mariuseu/bnr-dashboard:${{ github.sha }}
+            mariuseu/bnr-dashboard:${{ github.run_number }}
 
       - name: Deploy to k3s
         run: |
           kubectl set image deployment/bnr-dashboard \
-            bnr-dashboard=mariuseu/bnr-dashboard:${{ github.sha }} \
-            --record
+            bnr-dashboard=mariuseu/bnr-dashboard:${{ github.run_number }}
           kubectl rollout status deployment/bnr-dashboard --timeout=120s
