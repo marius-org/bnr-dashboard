@@ -117,33 +117,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
 .live-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* FOOTBALL */
-.matches-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0}
-@media(max-width:640px){.matches-grid{grid-template-columns:1fr}}
-.match-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem}
-.match-meta{display:flex;align-items:center;justify-content:space-between}
-.match-round{font-family:var(--mono);font-size:0.58rem;color:var(--text3);letter-spacing:0.05em}
-.match-date{font-family:var(--mono);font-size:0.58rem;color:var(--text3)}
-.match-teams{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
-.match-team{display:flex;flex-direction:column;align-items:center;gap:0.3rem;flex:1;min-width:0}
-.match-badge{width:28px;height:28px;object-fit:contain}
-.match-badge-placeholder{width:28px;height:28px;background:var(--border);border-radius:50%}
-.match-name{font-size:0.72rem;font-weight:500;color:var(--text);text-align:center;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.match-score-wrap{display:flex;align-items:center;justify-content:center;gap:0.4rem;flex-shrink:0}
-.match-score{font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--text);min-width:18px;text-align:center}
-.match-score-sep{font-family:var(--mono);font-size:0.8rem;color:var(--text3)}
-.match-vs{font-family:var(--mono);font-size:0.65rem;color:var(--text3);padding:0.2rem 0.5rem;border:1px solid var(--border);border-radius:4px}
-.match-status{text-align:center}
-.match-status span{font-family:var(--mono);font-size:0.58rem;padding:0.15rem 0.5rem;border-radius:3px}
-.status-live{background:#fef2f2;color:#dc2626;font-weight:600}
-.status-fin{background:#f0fdf4;color:#16a34a}
-.status-sched{background:#f5f5f5;color:var(--text3)}
-.matches-empty{font-family:var(--mono);font-size:0.75rem;color:var(--text3);padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px}
-/* sidebar matches */
-.sb-match{display:flex;flex-direction:column;gap:0.25rem;padding:0.6rem 0;border-bottom:1px solid var(--border)}
-.sb-match:last-child{border-bottom:none}
-.sb-match-teams{font-size:0.75rem;font-weight:500;color:var(--text)}
-.sb-match-info{font-family:var(--mono);font-size:0.6rem;color:var(--text3)}
+/* WEATHER */
+.weather-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:1.5rem}
+@media(max-width:700px){.weather-grid{grid-template-columns:repeat(2,1fr)}}
+.weather-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.9rem 0.8rem;text-align:center}
+.w-emoji{font-size:1.8rem;line-height:1;margin-bottom:0.4rem}
+.w-city{font-size:0.7rem;font-weight:600;color:var(--text2);margin-bottom:0.3rem;letter-spacing:0.04em}
+.w-temp{font-family:var(--mono);font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-0.03em;line-height:1}
+.w-unit{font-size:0.65rem;opacity:.5;margin-left:1px}
+.w-desc{font-size:0.65rem;color:var(--text3);margin-top:0.3rem}
+.w-feels{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-top:0.15rem}
+.w-wind{font-family:var(--mono);font-size:0.6rem;color:var(--text3)}
+
+/* HOLIDAYS */
+.holidays-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem}
+@media(max-width:500px){.holidays-list{grid-template-columns:1fr}}
+.holiday-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.85rem 1rem;display:flex;align-items:center;gap:0.8rem}
+.holiday-days{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--accent);min-width:36px;text-align:center;line-height:1}
+.holiday-days small{font-size:0.55rem;display:block;color:var(--text3);font-weight:400;letter-spacing:0.04em;margin-top:1px}
+.holiday-info{}
+.holiday-name{font-size:0.82rem;font-weight:500;color:var(--text);line-height:1.3}
+.holiday-date{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-top:0.2rem}
+
+/* EARTHQUAKES */
+.quake-list{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.quake-item{display:flex;align-items:center;gap:0.9rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border)}
+.quake-item:last-child{border-bottom:none}
+.quake-mag{font-family:var(--mono);font-size:1rem;font-weight:600;min-width:36px;text-align:center;padding:0.2rem 0.4rem;border-radius:5px;line-height:1}
+.quake-mag.ok     {background:#f0fdf4;color:#16a34a}
+.quake-mag.warning{background:#fffbeb;color:#d97706}
+.quake-mag.danger {background:#fef2f2;color:#dc2626}
+.quake-body{flex:1;min-width:0}
+.quake-place{font-size:0.82rem;font-weight:500;color:var(--text);line-height:1.3}
+.quake-meta{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-top:0.15rem}
+.quake-empty{padding:1rem;font-family:var(--mono);font-size:0.75rem;color:var(--text3)}
 
 /* FOOTER */
 .footer{background:var(--surface);border-top:1px solid var(--border);padding:1.2rem 1.5rem}
@@ -250,52 +257,62 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
       {% endif %}
     </div>
 
-    <!-- FOOTBALL -->
+    <!-- WEATHER -->
     <div class="section-head" style="margin-top:1.5rem">
-      <h2>⚽ SuperLiga România</h2>
-      <span class="count">Meciuri următoare</span>
+      <h2>🌤️ Vreme România</h2>
     </div>
-    {% if matches %}
-    <div class="matches-grid">
-      {% for m in matches %}
-      <div class="match-card">
-        <div class="match-meta">
-          <span class="match-round">{% if m.round %}Etapa {{ m.round }}{% endif %}</span>
-          <span class="match-date">{{ m.date }} {% if m.time %}· {{ m.time }}{% endif %}</span>
+    <div class="weather-grid">
+      {% for w in weather %}
+      <div class="weather-card">
+        <div class="w-emoji">{{ w.emoji }}</div>
+        <div class="w-city">{{ w.city }}</div>
+        <div class="w-temp">{{ w.temp }}<span class="w-unit">°C</span></div>
+        <div class="w-desc">{{ w.desc }}</div>
+        <div class="w-feels">Simte ca {{ w.feels }}°C</div>
+        <div class="w-wind">💨 {{ w.wind }} km/h</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- HOLIDAYS -->
+    <div class="section-head" style="margin-top:0.5rem">
+      <h2>📅 Sărbători Legale</h2>
+      <span class="count">Următoarele</span>
+    </div>
+    <div class="holidays-list">
+      {% for h in holidays %}
+      <div class="holiday-card">
+        <div class="holiday-days">
+          {{ h.days if h.days > 0 else "AZI" }}
+          <small>{{ "zile" if h.days > 1 else ("zi" if h.days == 1 else "") }}</small>
         </div>
-        <div class="match-teams">
-          <div class="match-team">
-            {% if m.home_badge %}<img class="match-badge" src="{{ m.home_badge }}" alt="{{ m.home }}" onerror="this.style.display='none'">{% else %}<div class="match-badge-placeholder"></div>{% endif %}
-            <span class="match-name">{{ m.home }}</span>
-          </div>
-          <div class="match-score-wrap">
-            {% if m.score_h is not none and m.score_a is not none %}
-              <span class="match-score">{{ m.score_h }}</span>
-              <span class="match-score-sep">:</span>
-              <span class="match-score">{{ m.score_a }}</span>
-            {% else %}
-              <span class="match-vs">vs</span>
-            {% endif %}
-          </div>
-          <div class="match-team">
-            {% if m.away_badge %}<img class="match-badge" src="{{ m.away_badge }}" alt="{{ m.away }}" onerror="this.style.display='none'">{% else %}<div class="match-badge-placeholder"></div>{% endif %}
-            <span class="match-name">{{ m.away }}</span>
-          </div>
+        <div class="holiday-info">
+          <div class="holiday-name">{{ h.name }}</div>
+          <div class="holiday-date">{{ h.date }}</div>
         </div>
-        <div class="match-status">
-          {% if m.status == 'Match Finished' %}
-            <span class="status-fin">Final</span>
-          {% elif m.status and 'live' in m.status|lower %}
-            <span class="status-live">● Live</span>
-          {% else %}
-            <span class="status-sched">{{ m.status if m.status else 'Programat' }}</span>
-          {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- EARTHQUAKES -->
+    <div class="section-head" style="margin-top:1.5rem">
+      <h2>🌍 Seisme România</h2>
+      <span class="count">Ultimele înregistrate</span>
+    </div>
+    {% if earthquakes %}
+    <div class="quake-list">
+      {% for q in earthquakes %}
+      <div class="quake-item">
+        <div class="quake-mag {{ q.level }}">M{{ q.mag }}</div>
+        <div class="quake-body">
+          <div class="quake-place">{{ q.place }}</div>
+          <div class="quake-meta">Adâncime {{ q.depth }} km · {{ q.time }}</div>
         </div>
       </div>
       {% endfor %}
     </div>
     {% else %}
-    <div class="matches-empty">Nu sunt meciuri disponibile momentan.</div>
+    <div class="quake-empty">Nu sunt seisme recente înregistrate.</div>
     {% endif %}
 
   </div>
@@ -334,17 +351,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
     </div>
 
     <div class="sidebar-widget">
-      <div class="widget-head">⚽ Meciuri Următoare</div>
+      <div class="widget-head">🌍 Seisme Recente</div>
       <div class="widget-body" style="padding:0.5rem 0.9rem">
-        {% if matches %}
-          {% for m in matches[:5] %}
+        {% if earthquakes %}
+          {% for q in earthquakes[:4] %}
           <div class="sb-match">
-            <div class="sb-match-teams">{{ m.home }} vs {{ m.away }}</div>
-            <div class="sb-match-info">{{ m.date }}{% if m.time %} · {{ m.time }}{% endif %}{% if m.round %} · Etapa {{ m.round }}{% endif %}</div>
+            <div class="sb-match-teams">
+              <span class="quake-mag {{ q.level }}" style="font-size:0.65rem;padding:0.1rem 0.35rem;border-radius:3px;margin-right:0.4rem">M{{ q.mag }}</span>
+              {{ q.place }}
+            </div>
+            <div class="sb-match-info">{{ q.depth }} km adâncime · {{ q.time }}</div>
           </div>
           {% endfor %}
         {% else %}
-          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text3);padding:0.5rem 0">Nu sunt meciuri disponibile.</div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text3);padding:0.5rem 0">Nu sunt seisme recente.</div>
         {% endif %}
       </div>
     </div>
