@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Pipeline Recap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #080c14;
+    --surface: #0d1320;
+    --surface2: #111827;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #f0b429;
+    --accent3: #4ade80;
+    --accent4: #f472b6;
+    --accent5: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+  .main { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* PIPELINE */
+  .pipeline-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 4rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+  .pipeline-step { flex: 1; min-width: 130px; position: relative; }
+  .pipeline-step::after {
+    content: '→';
+    position: absolute;
+    right: -14px; top: 28px;
+    color: var(--border);
+    font-size: 1.2rem;
+    z-index: 2;
+  }
+  .pipeline-step:last-child::after { display: none; }
+  .step-box {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 0.8rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .step-box:hover { transform: translateY(-4px); }
+  .step-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+  .step-name { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; }
+  .step-tech { font-family: var(--mono); font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block; }
+
+  .s1 .step-box:hover { border-color: #f472b6; box-shadow: 0 8px 30px rgba(244,114,182,0.15); }
+  .s1 .step-tech { color: #f472b6; background: rgba(244,114,182,0.1); }
+  .s2 .step-box:hover { border-color: #f0b429; box-shadow: 0 8px 30px rgba(240,180,41,0.15); }
+  .s2 .step-tech { color: #f0b429; background: rgba(240,180,41,0.1); }
+  .s3 .step-box:hover { border-color: #a78bfa; box-shadow: 0 8px 30px rgba(167,139,250,0.15); }
+  .s3 .step-tech { color: #a78bfa; background: rgba(167,139,250,0.1); }
+  .s4 .step-box:hover { border-color: #4ade80; box-shadow: 0 8px 30px rgba(74,222,128,0.15); }
+  .s4 .step-tech { color: #4ade80; background: rgba(74,222,128,0.1); }
+  .s5 .step-box:hover { border-color: #00d4ff; box-shadow: 0 8px 30px rgba(0,212,255,0.15); }
+  .s5 .step-tech { color: #00d4ff; background: rgba(0,212,255,0.1); }
+  .s6 .step-box:hover { border-color: #fb923c; box-shadow: 0 8px 30px rgba(251,146,60,0.15); }
+  .s6 .step-tech { color: #fb923c; background: rgba(251,146,60,0.1); }
+  .s7 .step-box:hover { border-color: #34d399; box-shadow: 0 8px 30px rgba(52,211,153,0.15); }
+  .s7 .step-tech { color: #34d399; background: rgba(52,211,153,0.1); }
+
+  /* LAYER CARDS */
+  .layers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+  .layer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; position: relative; overflow: hidden; transition: transform 0.3s; }
+  .layer-card:hover { transform: translateY(-3px); }
+  .layer-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .layer-card.pink::before { background: linear-gradient(90deg, #f472b6, transparent); }
+  .layer-card.yellow::before { background: linear-gradient(90deg, #f0b429, transparent); }
+  .layer-card.purple::before { background: linear-gradient(90deg, #a78bfa, transparent); }
+  .layer-card.green::before { background: linear-gradient(90deg, #4ade80, transparent); }
+  .layer-card.blue::before { background: linear-gradient(90deg, #00d4ff, transparent); }
+  .layer-card.orange::before { background: linear-gradient(90deg, #fb923c, transparent); }
+  .layer-card.teal::before { background: linear-gradient(90deg, #34d399, transparent); }
+  .layer-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+  .layer-icon { font-size: 2rem; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: var(--surface2); border-radius: 12px; border: 1px solid var(--border); }
+  .layer-title { font-size: 1.1rem; font-weight: 700; }
+  .layer-subtitle { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+  .layer-desc { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.7; }
+  .concepts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .concept-tag { font-family: var(--mono); font-size: 0.65rem; padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid; }
+  .pink .concept-tag { color: #f472b6; border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.05); }
+  .yellow .concept-tag { color: #f0b429; border-color: rgba(240,180,41,0.3); background: rgba(240,180,41,0.05); }
+  .purple .concept-tag { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.05); }
+  .green .concept-tag { color: #4ade80; border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+  .blue .concept-tag { color: #00d4ff; border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+  .orange .concept-tag { color: #fb923c; border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.05); }
+  .teal .concept-tag { color: #34d399; border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
+
+  /* TABLE */
+  .infra-table { width: 100%; border-collapse: collapse; margin-bottom: 4rem; font-size: 0.9rem; }
+  .infra-table th { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+  .infra-table td { padding: 0.8rem 1rem; border-bottom: 1px solid rgba(30,45,69,0.5); vertical-align: middle; }
+  .infra-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .vm-name { font-family: var(--mono); color: var(--accent); font-size: 0.85rem; }
+  .vm-ip { font-family: var(--mono); color: var(--accent2); font-size: 0.85rem; }
+  .role-badge { display: inline-block; font-family: var(--mono); font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 700; }
+  .role-control { background: rgba(244,114,182,0.15); color: #f472b6; }
+  .role-master { background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .role-worker { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .role-template { background: rgba(100,116,139,0.15); color: #94a3b8; }
+
+  /* CICD */
+  .cicd-flow { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 4rem; position: relative; overflow: hidden; }
+  .cicd-flow::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f472b6, #a78bfa, #00d4ff, #4ade80); }
+  .cicd-title { font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
+  .cicd-title code { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); background: rgba(0,212,255,0.1); padding: 0.2rem 0.5rem; border-radius: 4px; }
+  .cicd-steps { display: flex; flex-direction: column; gap: 0; }
+  .cicd-step { display: flex; align-items: flex-start; gap: 1rem; position: relative; padding-bottom: 1.5rem; }
+  .cicd-step:last-child { padding-bottom: 0; }
+  .cicd-step::before { content: ''; position: absolute; left: 18px; top: 36px; bottom: 0; width: 2px; background: var(--border); }
+  .cicd-step:last-child::before { display: none; }
+  .cicd-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; flex-shrink: 0; border: 2px solid; }
+  .n1 { color: #f472b6; border-color: #f472b6; background: rgba(244,114,182,0.1); }
+  .n2 { color: #a78bfa; border-color: #a78bfa; background: rgba(167,139,250,0.1); }
+  .n3 { color: #00d4ff; border-color: #00d4ff; background: rgba(0,212,255,0.1); }
+  .n4 { color: #f0b429; border-color: #f0b429; background: rgba(240,180,41,0.1); }
+  .n5 { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.1); }
+  .cicd-content { flex: 1; padding-top: 0.4rem; }
+  .cicd-content strong { display: block; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .cicd-content p { color: #94a3b8; font-size: 0.85rem; }
+  .cicd-content code { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); background: rgba(0,212,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+  /* CONCEPTS */
+  .concepts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 4rem; }
+  .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+  .concept-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .concept-card p { color: #94a3b8; font-size: 0.82rem; line-height: 1.6; }
+
+  /* NEXT */
+  .next-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 4rem; }
+  .next-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .next-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.8rem; }
+  .ni-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .next-item strong { display: block; font-size: 0.85rem; margin-bottom: 0.2rem; }
+  .next-item p { color: var(--muted); font-size: 0.78rem; }
+
+  .footer { text-align: center; padding: 3rem 2rem; color: var(--muted); font-family: var(--mono); font-size: 0.75rem; border-top: 1px solid var(--border); }
+
+  /* K8S SECTION */
+  .k8s-intro { margin-bottom: 2rem; }
+  .k8s-analogy { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; display: flex; align-items: flex-start; gap: 1.5rem; position: relative; overflow: hidden; }
+  .k8s-analogy::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #a78bfa, #00d4ff, transparent); }
+  .k8s-analogy-icon { font-size: 3rem; flex-shrink: 0; }
+  .k8s-analogy h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .k8s-analogy p { color: #94a3b8; font-size: 0.88rem; line-height: 1.7; }
+  .k8s-analogy em { color: #f0b429; font-style: italic; }
+  .k8s-analogy strong { color: var(--text); }
+
+  .k8s-arch { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; }
+  @media (max-width: 768px) { .k8s-arch { grid-template-columns: 1fr; } }
+  .k8s-plane { border-radius: 16px; padding: 1.5rem; border: 1px solid; }
+  .masters-plane { background: rgba(167,139,250,0.04); border-color: rgba(167,139,250,0.25); }
+  .workers-plane { background: rgba(74,222,128,0.04); border-color: rgba(74,222,128,0.25); }
+  .k8s-plane-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .masters-plane .k8s-plane-title { color: #a78bfa; }
+  .workers-plane .k8s-plane-title { color: #4ade80; }
+  .k8s-plane-subtitle { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-bottom: 1.2rem; }
+  .k8s-components { display: flex; flex-direction: column; gap: 0.8rem; }
+  .k8s-comp { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
+  .k8s-comp-name { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.3rem; font-family: var(--mono); }
+  .masters-plane .k8s-comp-name { color: #a78bfa; }
+  .workers-plane .k8s-comp-name { color: #4ade80; }
+  .k8s-comp-desc { color: #94a3b8; font-size: 0.8rem; line-height: 1.6; }
+
+  .k8s-objects { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .k8s-obj { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; transition: transform 0.2s; }
+  .k8s-obj:hover { transform: translateY(-3px); }
+  .k8s-obj-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; }
+  .k8s-obj-icon { font-size: 1.8rem; }
+  .k8s-obj-name { font-size: 0.95rem; font-weight: 700; }
+  .k8s-obj-file { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); background: rgba(0,212,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px; margin-top: 0.2rem; display: inline-block; }
+  .k8s-obj-desc { color: #94a3b8; font-size: 0.82rem; line-height: 1.6; margin-bottom: 0.8rem; }
+  .k8s-obj-analogy { font-family: var(--mono); font-size: 0.7rem; color: #f0b429; background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.2); padding: 0.4rem 0.7rem; border-radius: 6px; }
+
+  .traffic-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; margin-bottom: 2rem; }
+  .tf-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 0.9rem; text-align: center; min-width: 100px; }
+  .tf-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .tf-label { font-size: 0.75rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .tf-detail { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+  .tf-arrow { color: var(--border); font-size: 1.2rem; flex-shrink: 0; }
+
+  .k8s-vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; margin-bottom: 4rem; }
+  @media (max-width: 600px) { .k8s-vs { grid-template-columns: 1fr; } }
+  .k8s-vs-item p { color: #94a3b8; font-size: 0.85rem; line-height: 1.7; margin-top: 0.5rem; }
+  .k8s-vs-title { font-size: 0.95rem; font-weight: 700; }
+  .k8s-vs-divider { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.8rem; text-align: center; }
+
+
+  .cloudinit-explainer { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+  @media (max-width: 768px) { .cloudinit-explainer { grid-template-columns: 1fr; } }
+  .ci-left { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; }
+  .ci-left::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00d4ff, transparent); }
+  .ci-badge { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; display: inline-block; margin-bottom: 1rem; }
+  .ci-left h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; }
+  .ci-left p { color: #94a3b8; font-size: 0.88rem; line-height: 1.7; }
+  .ci-left code { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); background: rgba(0,212,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px; }
+  .ci-left strong { color: var(--text); }
+  .ci-right { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .ci-what-title { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .ci-item { display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 1rem; }
+  .ci-item:last-child { margin-bottom: 0; }
+  .ci-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .ci-item strong { display: block; font-size: 0.85rem; margin-bottom: 0.2rem; }
+  .ci-item p { color: #94a3b8; font-size: 0.8rem; }
+
+  /* COMMAND SECTION */
+  .cmd-section { margin-bottom: 4rem; }
+  .cmd-intro { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; }
+  .cmd-intro p { color: #94a3b8; font-size: 0.9rem; }
+  .cmd-list { display: flex; flex-direction: column; gap: 1rem; }
+  .cmd-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
+  .cmd-block:hover { transform: translateX(4px); }
+  .cmd-header { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+  .cmd-num { font-family: var(--mono); font-size: 0.65rem; font-weight: 700; color: var(--accent); background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); padding: 0.2rem 0.5rem; border-radius: 6px; flex-shrink: 0; }
+  .cmd-title { font-size: 0.9rem; font-weight: 700; }
+  .cmd-code { font-family: var(--mono); font-size: 0.78rem; color: #4ade80; background: #060a10; padding: 0.9rem 1.2rem; border-left: 3px solid #4ade80; word-break: break-all; line-height: 1.6; }
+  .cmd-explain { padding: 1rem 1.2rem; color: #94a3b8; font-size: 0.85rem; line-height: 1.7; }
+  .cmd-explain code { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); background: rgba(0,212,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px; }
+  .cmd-explain strong { color: var(--text); }
+
+  /* CLONE SECTION */
+  .clone-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 4rem; }
+  .clone-flow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .clone-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; text-align: center; min-width: 110px; }
+  .clone-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .clone-label { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .clone-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+  .clone-arrow { color: var(--border); font-size: 1.2rem; flex-shrink: 0; }
+  .clone-two-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 768px) { .clone-two-paths { grid-template-columns: 1fr; } .clone-flow { justify-content: center; } }
+  .clone-path { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem; }
+  .clone-path-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.8rem; }
+  .clone-path-desc { color: #94a3b8; font-size: 0.83rem; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">DevOps Course Project — Full Stack CI/CD Pipeline</div>
+  <h1>From Bare Metal<br>to Production</h1>
+  <p>A complete recap of every layer, tool, concept, and decision made building a real DevOps pipeline from scratch on a Lenovo i5-14500T homelab.</p>
+</div>
+
+<div class="main">
+
+  <div class="section-title">The Full Pipeline — Left to Right</div>
+  <div class="pipeline-flow">
+    <div class="pipeline-step s1"><div class="step-box"><span class="step-icon">🖥️</span><div class="step-name">Bare Metal</div><div class="step-tech">Lenovo i5-14500T</div></div></div>
+    <div class="pipeline-step s2"><div class="step-box"><span class="step-icon">⚙️</span><div class="step-name">Hypervisor</div><div class="step-tech">Proxmox 9.1</div></div></div>
+    <div class="pipeline-step s3"><div class="step-box"><span class="step-icon">🏗️</span><div class="step-name">Provisioning</div><div class="step-tech">Terraform</div></div></div>
+    <div class="pipeline-step s4"><div class="step-box"><span class="step-icon">🔧</span><div class="step-name">Configuration</div><div class="step-tech">Ansible</div></div></div>
+    <div class="pipeline-step s5"><div class="step-box"><span class="step-icon">☸️</span><div class="step-name">Orchestration</div><div class="step-tech">k3s Cluster</div></div></div>
+    <div class="pipeline-step s6"><div class="step-box"><span class="step-icon">🚀</span><div class="step-name">CI/CD</div><div class="step-tech">GitHub Actions</div></div></div>
+    <div class="pipeline-step s7"><div class="step-box"><span class="step-icon">🌐</span><div class="step-name">App Live</div><div class="step-tech">BNR Dashboard</div></div></div>
+  </div>
+
+  <div class="section-title">Each Layer Explained</div>
+  <div class="layers-grid">
+    <div class="layer-card pink">
+      <div class="layer-header"><div class="layer-icon">🖥️</div><div><div class="layer-title">Proxmox VE</div><div class="layer-subtitle">The Foundation — Bare Metal Hypervisor</div></div></div>
+      <p class="layer-desc">Installed directly on the Lenovo hardware. Manages all virtual machines, storage, and networking. Created a Ubuntu 24.04 cloud-init template (VM 9000) that serves as the base image for all other VMs — same concept as an AWS AMI. The vmbr0 bridge connects all VMs to the physical network.</p>
+      <div class="concepts"><span class="concept-tag">Virtualization</span><span class="concept-tag">vmbr0 Bridge</span><span class="concept-tag">cloud-init</span><span class="concept-tag">LVM Storage</span><span class="concept-tag">VM Templates</span><span class="concept-tag">API Tokens</span></div>
+    </div>
+    <div class="layer-card yellow">
+      <div class="layer-header"><div class="layer-icon">🏗️</div><div><div class="layer-title">Terraform</div><div class="layer-subtitle">Infrastructure as Code — VM Provisioning</div></div></div>
+      <p class="layer-desc">Authenticates to the Proxmox API and clones the template 5 times automatically using for_each. Each clone gets its own IP, SSH key, RAM, CPU and disk — all defined in code files. One command creates everything. terraform destroy removes it all. The state file tracks what exists.</p>
+      <div class="concepts"><span class="concept-tag">Declarative IaC</span><span class="concept-tag">State File</span><span class="concept-tag">for_each</span><span class="concept-tag">bpg/proxmox</span><span class="concept-tag">terraform plan</span><span class="concept-tag">Idempotency</span></div>
+    </div>
+    <div class="layer-card purple">
+      <div class="layer-header"><div class="layer-icon">🔧</div><div><div class="layer-title">Ansible</div><div class="layer-subtitle">Configuration Management — k3s Deployment</div></div></div>
+      <p class="layer-desc">Connects to all 5 VMs over SSH and configures them in 3 sequential phases: prereqs (kernel modules, swap disabled, sysctl params), k3s masters (one at a time via serial:1, cluster-init on primary, join on others), k3s workers (agent install, token from primary master).</p>
+      <div class="concepts"><span class="concept-tag">Agentless SSH</span><span class="concept-tag">Inventory</span><span class="concept-tag">Playbooks</span><span class="concept-tag">Roles</span><span class="concept-tag">serial: 1</span><span class="concept-tag">delegate_to</span></div>
+    </div>
+    <div class="layer-card green">
+      <div class="layer-header"><div class="layer-icon">☸️</div><div><div class="layer-title">k3s Cluster</div><div class="layer-subtitle">Kubernetes — Container Orchestration</div></div></div>
+      <p class="layer-desc">3 master nodes form an etcd quorum providing HA — tolerates losing 1 master. 2 worker nodes run application pods. Full Kubernetes API compatible with k8s. Nginx Ingress Controller on NodePort 32525 routes external traffic into the cluster to the right service.</p>
+      <div class="concepts"><span class="concept-tag">etcd Quorum</span><span class="concept-tag">Control Plane</span><span class="concept-tag">Pods</span><span class="concept-tag">Deployments</span><span class="concept-tag">Services</span><span class="concept-tag">Ingress</span></div>
+    </div>
+    <div class="layer-card blue">
+      <div class="layer-header"><div class="layer-icon">🐳</div><div><div class="layer-title">Docker</div><div class="layer-subtitle">Containerization — Build and Package</div></div></div>
+      <p class="layer-desc">The Python FastAPI app is packaged into a Docker image using a multi-layer Dockerfile. Dependencies are installed in a separate layer from app code — so unchanged deps are cached and rebuilds are fast. Images are tagged with :latest and the git commit SHA for full traceability.</p>
+      <div class="concepts"><span class="concept-tag">Dockerfile</span><span class="concept-tag">Layer Caching</span><span class="concept-tag">Docker Hub</span><span class="concept-tag">Image Tags</span><span class="concept-tag">python:3.12-slim</span><span class="concept-tag">containerd</span></div>
+    </div>
+    <div class="layer-card orange">
+      <div class="layer-header"><div class="layer-icon">⚡</div><div><div class="layer-title">GitHub Actions</div><div class="layer-subtitle">CI/CD — Automated Build and Deploy</div></div></div>
+      <p class="layer-desc">Every git push to main triggers the pipeline automatically via a self-hosted runner on the control node. The runner builds the image, pushes to Docker Hub with the commit SHA as tag, then runs kubectl to update the k3s deployment with a zero-downtime rolling update.</p>
+      <div class="concepts"><span class="concept-tag">Self-hosted Runner</span><span class="concept-tag">Workflow YAML</span><span class="concept-tag">Secrets</span><span class="concept-tag">Rolling Update</span><span class="concept-tag">Commit SHA Tags</span><span class="concept-tag">Rollout Status</span></div>
+    </div>
+    <div class="layer-card teal">
+      <div class="layer-header"><div class="layer-icon">🏦</div><div><div class="layer-title">BNR Dashboard App</div><div class="layer-subtitle">Python FastAPI — The Workload</div></div></div>
+      <p class="layer-desc">Fetches BNR exchange rates and gold/XDR prices from the official BNR XML feed. Fetches 5 latest Romanian news from Digi24 RSS. Rendered server-side with Jinja2 templates. Liveness and readiness probes on /health endpoint. 2 replicas running across worker nodes.</p>
+      <div class="concepts"><span class="concept-tag">FastAPI</span><span class="concept-tag">Jinja2</span><span class="concept-tag">XML Parsing</span><span class="concept-tag">RSS Feed</span><span class="concept-tag">Health Probes</span><span class="concept-tag">2 Replicas</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Infrastructure Inventory</div>
+  <table class="infra-table">
+    <thead>
+      <tr><th>VM ID</th><th>Hostname</th><th>IP Address</th><th>Role</th><th>RAM</th><th>CPU</th><th>Disk</th><th>Created By</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="vm-name">9000</span></td><td>ubuntu-2404-template</td><td><span class="vm-ip">—</span></td><td><span class="role-badge role-template">Template</span></td><td>2 GB</td><td>2 vCPU</td><td>20 GB</td><td>Manual</td></tr>
+      <tr><td><span class="vm-name">150</span></td><td>control-node</td><td><span class="vm-ip">192.168.1.50</span></td><td><span class="role-badge role-control">Control</span></td><td>2 GB</td><td>2 vCPU</td><td>20 GB</td><td>Manual Clone</td></tr>
+      <tr><td><span class="vm-name">151</span></td><td>k3s-master-01</td><td><span class="vm-ip">192.168.1.51</span></td><td><span class="role-badge role-master">Master</span></td><td>2 GB</td><td>2 vCPU</td><td>20 GB</td><td>Terraform</td></tr>
+      <tr><td><span class="vm-name">152</span></td><td>k3s-master-02</td><td><span class="vm-ip">192.168.1.52</span></td><td><span class="role-badge role-master">Master</span></td><td>2 GB</td><td>2 vCPU</td><td>20 GB</td><td>Terraform</td></tr>
+      <tr><td><span class="vm-name">153</span></td><td>k3s-master-03</td><td><span class="vm-ip">192.168.1.53</span></td><td><span class="role-badge role-master">Master</span></td><td>2 GB</td><td>2 vCPU</td><td>20 GB</td><td>Terraform</td></tr>
+      <tr><td><span class="vm-name">154</span></td><td>k3s-worker-01</td><td><span class="vm-ip">192.168.1.54</span></td><td><span class="role-badge role-worker">Worker</span></td><td>3 GB</td><td>2 vCPU</td><td>30 GB</td><td>Terraform</td></tr>
+      <tr><td><span class="vm-name">155</span></td><td>k3s-worker-02</td><td><span class="vm-ip">192.168.1.55</span></td><td><span class="role-badge role-worker">Worker</span></td><td>3 GB</td><td>2 vCPU</td><td>30 GB</td><td>Terraform</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">What is Cloud-Init?</div>
+  <div class="cloudinit-explainer">
+    <div class="ci-left">
+      <div class="ci-badge">☁️ Cloud-Init</div>
+      <h3>First-boot VM configuration — automatic, zero interaction</h3>
+      <p>Cloud-init is the industry standard for bootstrapping virtual machines. The moment a VM starts for the first time, cloud-init reads a configuration source and sets everything up before you ever touch the keyboard — SSH keys, hostname, static IP, users, packages.</p>
+      <p style="margin-top:1rem;">This is the same technology powering every major cloud provider. When you launch an EC2 instance on AWS and it already has your SSH key ready — that's cloud-init. Proxmox implements the exact same standard via a virtual CD-ROM drive (the <code>--ide2 cloudinit</code> drive) that the VM reads on first boot.</p>
+      <p style="margin-top:1rem;"><strong>Without cloud-init:</strong> boot each VM → open console → manually set IP → add SSH key → set hostname → create user. Repeated 5 times.</p>
+      <p style="margin-top:0.5rem;"><strong>With cloud-init:</strong> clone template → VM boots → 30 seconds later it's fully configured and reachable.</p>
+    </div>
+    <div class="ci-right">
+      <div class="ci-what-title">What cloud-init injected into each VM</div>
+      <div class="ci-item"><span class="ci-dot" style="background:#f472b6"></span><div><strong>SSH Public Key</strong><p>Your Windows workstation key + control-node key added to authorized_keys. Login without password from day one.</p></div></div>
+      <div class="ci-item"><span class="ci-dot" style="background:#a78bfa"></span><div><strong>Hostname</strong><p>Each clone gets its own name: k3s-master-01, k3s-worker-02, etc. Set automatically at first boot.</p></div></div>
+      <div class="ci-item"><span class="ci-dot" style="background:#00d4ff"></span><div><strong>Static IP Address</strong><p>192.168.1.51 through .55 assigned per VM. No DHCP, no guessing which IP a VM got.</p></div></div>
+      <div class="ci-item"><span class="ci-dot" style="background:#f0b429"></span><div><strong>Default User</strong><p>ubuntu user created with passwordless sudo. Ready for Ansible to connect and configure.</p></div></div>
+      <div class="ci-item"><span class="ci-dot" style="background:#4ade80"></span><div><strong>Gateway &amp; DNS</strong><p>192.168.1.1 as gateway, 8.8.8.8 as DNS. VM has full internet access on first boot.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Template Creation — Every Command Explained</div>
+  <div class="cmd-section">
+    <div class="cmd-intro">
+      <p>These commands were run directly on the Proxmox host (pve12) via SSH. Together they download Ubuntu, customize the disk image, build VM 9000, and lock it as a reusable template. This is your private AMI.</p>
+    </div>
+    <div class="cmd-list">
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">01</span><span class="cmd-title">Download the Ubuntu Cloud Image</span></div>
+        <div class="cmd-code">wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img -O /tmp/ubuntu-24.04-cloud.img</div>
+        <div class="cmd-explain">Downloads the official Ubuntu 24.04 LTS cloud image from Canonical. This is not a regular ISO — it's a pre-built, compressed disk image specifically designed for virtual environments. It's minimal (~600MB), boots in seconds, and has cloud-init already baked in. The <code>-O</code> flag saves it with a clean filename to /tmp.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">02</span><span class="cmd-title">Install libguestfs-tools</span></div>
+        <div class="cmd-code">apt install -y libguestfs-tools</div>
+        <div class="cmd-explain">Installs the libguestfs toolkit — a suite of tools for reading and modifying VM disk images without ever booting them. Think of it as mounting a hard drive, chrooting inside, making changes, then unmounting. The <code>-y</code> flag skips the confirmation prompt. Required for the next step.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">03</span><span class="cmd-title">Inject qemu-guest-agent into the disk image</span></div>
+        <div class="cmd-code">virt-customize -a /tmp/ubuntu-24.04-cloud.img --install qemu-guest-agent</div>
+        <div class="cmd-explain"><code>virt-customize</code> opens the disk image and runs <code>apt install qemu-guest-agent</code> inside it — without booting the VM. The guest agent is a small daemon that runs inside the VM and lets Proxmox communicate with it: clean shutdown, IP address detection, filesystem freeze for live backups. Without it, Proxmox is blind to what's inside the VM.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">04</span><span class="cmd-title">Create an empty VM shell in Proxmox</span></div>
+        <div class="cmd-code">qm create 9000 --name "ubuntu-2404-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0</div>
+        <div class="cmd-explain">Creates VM ID 9000 as an empty hardware definition — no disk yet. <code>virtio</code> is the paravirtualized network driver (much faster than emulated Intel e1000). <code>bridge=vmbr0</code> connects it to the physical network bridge so VMs can reach your LAN and internet. Memory and cores are just defaults for the template; clones can override these.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">05</span><span class="cmd-title">Import the disk image into Proxmox storage</span></div>
+        <div class="cmd-code">qm importdisk 9000 /tmp/ubuntu-24.04-cloud.img local-lvm</div>
+        <div class="cmd-explain">Takes the downloaded .img file and imports it into Proxmox's LVM storage pool, associating it with VM 9000. After this, the disk exists in storage as <code>vm-9000-disk-0</code> but is not yet connected to the VM — it's an unattached volume.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">06</span><span class="cmd-title">Attach the disk to the VM</span></div>
+        <div class="cmd-code">qm set 9000 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9000-disk-0</div>
+        <div class="cmd-explain">Connects the imported disk to VM 9000 as the primary drive on <code>scsi0</code>. <code>virtio-scsi-pci</code> is the paravirtualized SCSI controller — significantly faster than emulated IDE or SATA because it avoids hardware emulation overhead. Now the VM has a bootable operating system disk.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">07</span><span class="cmd-title">Add the cloud-init drive</span></div>
+        <div class="cmd-code">qm set 9000 --ide2 local-lvm:cloudinit</div>
+        <div class="cmd-explain">This is the magic step. Adds a virtual CD-ROM drive on IDE2 that Proxmox uses to pass cloud-init configuration into the VM at first boot. When you clone this template and set SSH keys, IP, hostname in Proxmox — it writes them to this drive. The VM reads it on boot and applies everything automatically. No this drive = no cloud-init injection.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">08</span><span class="cmd-title">Set boot order</span></div>
+        <div class="cmd-code">qm set 9000 --boot c --bootdisk scsi0</div>
+        <div class="cmd-explain">Tells the VM to boot from disk (<code>c</code> = disk in BIOS notation) and specifically from <code>scsi0</code>. Without this the VM's BIOS might try to PXE boot over the network or look at other drives first, causing a boot failure.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">09</span><span class="cmd-title">Configure serial console</span></div>
+        <div class="cmd-code">qm set 9000 --serial0 socket --vga serial0</div>
+        <div class="cmd-explain">Adds a serial port and redirects display output to it. Cloud images often send console output to the serial port instead of VGA. This lets you access the VM via Proxmox's built-in terminal (noVNC) even when the network isn't configured yet — critical for debugging first-boot issues or misconfigured IPs.</div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">10</span><span class="cmd-title">Enable guest agent integration</span></div>
+        <div class="cmd-code">qm set 9000 --agent enabled=1</div>
+        <div class="cmd-explain">Tells Proxmox to actively communicate with the <code>qemu-guest-agent</code> daemon installed in step 03. Enables: clean graceful shutdown (vs hard power off), live IP address reporting in the Proxmox UI, filesystem freeze/thaw for consistent live backups, and guest OS information display.</div>
+      </div>
+
+      <div class="cmd-block" style="border-color: rgba(240,180,41,0.4);">
+        <div class="cmd-header"><span class="cmd-num" style="background:rgba(240,180,41,0.15);color:#f0b429;border-color:rgba(240,180,41,0.3);">11</span><span class="cmd-title">Convert VM to template</span></div>
+        <div class="cmd-code" style="border-left-color:#f0b429;">qm template 9000</div>
+        <div class="cmd-explain">Locks VM 9000 permanently — it can no longer be started directly. It now exists only as a source for cloning. When Proxmox clones a template on LVM storage, it uses <strong>linked clones</strong> — the clone shares the base disk blocks and only stores its own changes (copy-on-write). This means cloning takes seconds and uses minimal extra storage. Your private AMI is ready.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-title">The Cloning Process — Template → Running VM</div>
+  <div class="clone-section">
+    <div class="clone-flow">
+      <div class="clone-step">
+        <div class="clone-icon">📋</div>
+        <div class="clone-label">Template 9000</div>
+        <div class="clone-sub">Locked base image</div>
+      </div>
+      <div class="clone-arrow">→</div>
+      <div class="clone-step">
+        <div class="clone-icon">🖱️</div>
+        <div class="clone-label">Clone</div>
+        <div class="clone-sub">Proxmox UI or Terraform</div>
+      </div>
+      <div class="clone-arrow">→</div>
+      <div class="clone-step">
+        <div class="clone-icon">⚙️</div>
+        <div class="clone-label">cloud-init config</div>
+        <div class="clone-sub">IP, hostname, SSH key</div>
+      </div>
+      <div class="clone-arrow">→</div>
+      <div class="clone-step">
+        <div class="clone-icon">🔌</div>
+        <div class="clone-label">VM Powers On</div>
+        <div class="clone-sub">First boot starts</div>
+      </div>
+      <div class="clone-arrow">→</div>
+      <div class="clone-step">
+        <div class="clone-icon">☁️</div>
+        <div class="clone-label">cloud-init runs</div>
+        <div class="clone-sub">~30 seconds</div>
+      </div>
+      <div class="clone-arrow">→</div>
+      <div class="clone-step" style="border-color:rgba(74,222,128,0.4);">
+        <div class="clone-icon">✅</div>
+        <div class="clone-label">VM Ready</div>
+        <div class="clone-sub">SSH reachable</div>
+      </div>
+    </div>
+    <div class="clone-two-paths">
+      <div class="clone-path">
+        <div class="clone-path-title" style="color:#f472b6;">🖱️ Manual Clone (control-node)</div>
+        <div class="clone-path-desc">Done once via Proxmox web UI. Right-click template → Clone → set VM ID 150, name control-node, full clone. Then set cloud-init values in the VM's Cloud-Init tab: user=ubuntu, SSH key, IP=192.168.1.50/24, gateway=192.168.1.1. Start the VM. This is the chicken-and-egg exception — control-node runs Terraform, so it can't provision itself.</div>
+      </div>
+      <div class="clone-path">
+        <div class="clone-path-title" style="color:#a78bfa;">🏗️ Terraform Clone (all other VMs)</div>
+        <div class="clone-path-desc">Terraform calls the Proxmox API using the bpg/proxmox provider. For each entry in the locals map (151–155), it clones template 9000, sets cloud-init parameters (IP, hostname, SSH key), and starts the VM. All 5 VMs are provisioned in parallel in under 2 minutes. Fully repeatable — terraform destroy then terraform apply rebuilds everything from scratch.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Kubernetes / k3s — For Complete Beginners</div>
+
+  <div class="k8s-intro">
+    <div class="k8s-analogy">
+      <div class="k8s-analogy-icon">🏭</div>
+      <div>
+        <h3>Think of it as a smart factory manager</h3>
+        <p>You don't say <em>"go to machine #3 and start the conveyor belt"</em>. You say <em>"I need 2 units of product X running at all times"</em>. The factory manager (Kubernetes) figures out which machines are free, places the work, monitors it, and if a machine breaks — automatically moves the work to another one. You only describe the <strong>desired outcome</strong>, never the manual steps.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="k8s-arch">
+    <div class="k8s-plane masters-plane">
+      <div class="k8s-plane-title">🧠 Control Plane (Masters × 3)</div>
+      <div class="k8s-plane-subtitle">The brain — makes all decisions</div>
+      <div class="k8s-components">
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">API Server</div>
+          <div class="k8s-comp-desc">The single entry point for everything. kubectl, Terraform, GitHub Actions — all talk to this. It's the front door of the cluster.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">etcd</div>
+          <div class="k8s-comp-desc">A distributed key-value database that stores the entire cluster state. How many pods should exist, what's currently running, all config. The source of truth. Replicated across all 3 masters — this is what provides HA.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">Scheduler</div>
+          <div class="k8s-comp-desc">Watches for new pods with no assigned node and picks the best worker to run them on — based on available CPU, memory, and other constraints.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">Controller Manager</div>
+          <div class="k8s-comp-desc">Runs control loops that continuously compare desired state vs actual state. If you said "I want 2 pods" and one crashes, the controller notices and tells the scheduler to create a replacement.</div>
+        </div>
+      </div>
+    </div>
+    <div class="k8s-plane workers-plane">
+      <div class="k8s-plane-title">⚙️ Data Plane (Workers × 2)</div>
+      <div class="k8s-plane-subtitle">The muscle — runs your workloads</div>
+      <div class="k8s-components">
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">kubelet</div>
+          <div class="k8s-comp-desc">The agent running on every worker node. Receives pod assignments from the control plane and tells the container runtime (containerd) to start or stop containers. Also runs health checks.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">containerd</div>
+          <div class="k8s-comp-desc">The container runtime — actually pulls Docker images and runs containers. k3s uses containerd directly, no Docker daemon needed on workers.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">kube-proxy</div>
+          <div class="k8s-comp-desc">Maintains network rules on each node so that Services work correctly — traffic arriving for a Service IP gets routed to the right pod, wherever it's running in the cluster.</div>
+        </div>
+        <div class="k8s-comp">
+          <div class="k8s-comp-name">Pods (your app)</div>
+          <div class="k8s-comp-desc">The smallest deployable unit. A pod wraps one or more containers and gives them a shared IP and storage. Your BNR Dashboard runs as 2 pods — one on each worker node.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:3rem;">The 4 Core Kubernetes Objects — What You Actually Write</div>
+  <div class="k8s-objects">
+
+    <div class="k8s-obj">
+      <div class="k8s-obj-header">
+        <span class="k8s-obj-icon">📦</span>
+        <div>
+          <div class="k8s-obj-name">Pod</div>
+          <div class="k8s-obj-file">lowest level unit</div>
+        </div>
+      </div>
+      <p class="k8s-obj-desc">One running instance of your app container. Has its own IP inside the cluster but it's ephemeral — if it crashes or gets replaced, it gets a new IP. You almost never create pods directly.</p>
+      <div class="k8s-obj-analogy">Like a single worker at a desk</div>
+    </div>
+
+    <div class="k8s-obj">
+      <div class="k8s-obj-header">
+        <span class="k8s-obj-icon">🔁</span>
+        <div>
+          <div class="k8s-obj-name">Deployment</div>
+          <div class="k8s-obj-file">k8s/deployment.yaml</div>
+        </div>
+      </div>
+      <p class="k8s-obj-desc">Wraps pods and adds intelligence: "keep 2 replicas of this image running at all times". If one pod dies, Deployment creates a new one. Handles rolling updates — swaps old pods for new ones one at a time with zero downtime.</p>
+      <div class="k8s-obj-analogy">Like a manager who ensures 2 workers are always at their desks</div>
+    </div>
+
+    <div class="k8s-obj">
+      <div class="k8s-obj-header">
+        <span class="k8s-obj-icon">🔗</span>
+        <div>
+          <div class="k8s-obj-name">Service</div>
+          <div class="k8s-obj-file">k8s/service.yaml</div>
+        </div>
+      </div>
+      <p class="k8s-obj-desc">A stable, permanent IP and DNS name that sits in front of your pods. Pods come and go and change IPs — the Service IP never changes. It load-balances traffic across all healthy pods automatically. Type ClusterIP = internal only.</p>
+      <div class="k8s-obj-analogy">Like a reception desk that always knows where to route calls</div>
+    </div>
+
+    <div class="k8s-obj">
+      <div class="k8s-obj-header">
+        <span class="k8s-obj-icon">🌐</span>
+        <div>
+          <div class="k8s-obj-name">Ingress</div>
+          <div class="k8s-obj-file">k8s/ingress.yaml</div>
+        </div>
+      </div>
+      <p class="k8s-obj-desc">The external door into the cluster. Receives HTTP traffic from outside (via the Nginx Ingress Controller on NodePort 32525) and routes it to the right Service based on path or hostname rules. Without Ingress, your app is unreachable from outside the cluster.</p>
+      <div class="k8s-obj-analogy">Like the building's front door with a directory board</div>
+    </div>
+
+  </div>
+
+  <div class="section-title" style="margin-top:3rem;">Traffic Flow — From Your Browser to the App Pod</div>
+  <div class="traffic-flow">
+    <div class="tf-step">
+      <div class="tf-icon">💻</div>
+      <div class="tf-label">Your Browser</div>
+      <div class="tf-detail">192.168.1.54:32525</div>
+    </div>
+    <div class="tf-arrow">→</div>
+    <div class="tf-step">
+      <div class="tf-icon">🔀</div>
+      <div class="tf-label">NodePort</div>
+      <div class="tf-detail">port 32525 on any worker</div>
+    </div>
+    <div class="tf-arrow">→</div>
+    <div class="tf-step">
+      <div class="tf-icon">⚖️</div>
+      <div class="tf-label">Nginx Ingress Controller</div>
+      <div class="tf-detail">reads ingress rules</div>
+    </div>
+    <div class="tf-arrow">→</div>
+    <div class="tf-step">
+      <div class="tf-icon">🔗</div>
+      <div class="tf-label">Service</div>
+      <div class="tf-detail">ClusterIP load balancer</div>
+    </div>
+    <div class="tf-arrow">→</div>
+    <div class="tf-step">
+      <div class="tf-icon">📦</div>
+      <div class="tf-label">Pod</div>
+      <div class="tf-detail">bnr-dashboard:8080</div>
+    </div>
+    <div class="tf-arrow">→</div>
+    <div class="tf-step" style="border-color:rgba(74,222,128,0.4);">
+      <div class="tf-icon">🏦</div>
+      <div class="tf-label">BNR Dashboard</div>
+      <div class="tf-detail">FastAPI responds</div>
+    </div>
+  </div>
+
+  <div class="k8s-vs">
+    <div class="k8s-vs-item">
+      <div class="k8s-vs-title" style="color:#f0b429;">☸️ Kubernetes (full)</div>
+      <p>The complete upstream project. Powerful and flexible but complex to install and operate. Requires dedicated tooling (kubeadm, etc.), heavier resource usage. Used in production clouds (GKE, EKS, AKS).</p>
+    </div>
+    <div class="k8s-vs-divider">VS</div>
+    <div class="k8s-vs-item">
+      <div class="k8s-vs-title" style="color:#00d4ff;">k3s (what we used)</div>
+      <p>A certified, lightweight Kubernetes distribution by Rancher. Same API, same kubectl, same manifests — but packaged as a single ~70MB binary. Replaces etcd with SQLite by default (we use etcd for HA). Perfect for homelabs, edge, and IoT. Installs in 30 seconds.</p>
+    </div>
+  </div>
+
+  <div class="section-title">CI/CD Pipeline — Step by Step</div>
+  <div class="cicd-flow">
+    <div class="cicd-title">🚀 What happens every time you run <code>git push origin main</code></div>
+    <div class="cicd-steps">
+      <div class="cicd-step">
+        <div class="cicd-num n1">01</div>
+        <div class="cicd-content">
+          <strong>Push Detected</strong>
+          <p>GitHub detects a push to <code>main</code> and triggers the workflow in <code>.github/workflows/deploy.yml</code>. The self-hosted <code>control-node</code> runner picks up the job.</p>
+        </div>
+      </div>
+      <div class="cicd-step">
+        <div class="cicd-num n2">02</div>
+        <div class="cicd-content">
+          <strong>Code Checkout</strong>
+          <p>The runner clones the repository using <code>actions/checkout@v4</code>. This gives the runner access to the Dockerfile and all app source code.</p>
+        </div>
+      </div>
+      <div class="cicd-step">
+        <div class="cicd-num n3">03</div>
+        <div class="cicd-content">
+          <strong>Docker Build and Push</strong>
+          <p>Builds a new Docker image using <code>docker/build-push-action</code>. Two tags pushed to Docker Hub: <code>mariuseu/bnr-dashboard:latest</code> and <code>mariuseu/bnr-dashboard:&lt;git-sha&gt;</code>.</p>
+        </div>
+      </div>
+      <div class="cicd-step">
+        <div class="cicd-num n4">04</div>
+        <div class="cicd-content">
+          <strong>k3s Deployment Update</strong>
+          <p><code>kubectl set image</code> updates the deployment to the new SHA-tagged image. Kubernetes starts a rolling update — new pods start before old ones stop. Zero downtime guaranteed.</p>
+        </div>
+      </div>
+      <div class="cicd-step">
+        <div class="cicd-num n5">05</div>
+        <div class="cicd-content">
+          <strong>Rollout Verified</strong>
+          <p><code>kubectl rollout status</code> waits for all pods to pass readiness probes. If anything fails, the pipeline fails and the previous version continues serving traffic automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Key Concepts Mastered</div>
+  <div class="concepts-grid">
+    <div class="concept-card"><h4>🔄 Idempotency</h4><p>Running Terraform or Ansible 10 times gives the same result as running it once. Tools check current state before making changes — safe to re-run anytime.</p></div>
+    <div class="concept-card"><h4>📝 Declarative vs Imperative</h4><p>Terraform and Kubernetes are declarative — you describe the desired end state, not the steps. The tool figures out how to make reality match the declaration.</p></div>
+    <div class="concept-card"><h4>🏗️ Separation of Concerns</h4><p>Each tool has one job: Proxmox virtualizes, Terraform provisions, Ansible configures, k3s orchestrates, GitHub Actions deploys. Layers are replaceable independently.</p></div>
+    <div class="concept-card"><h4>🔢 etcd Quorum</h4><p>With 3 masters, 2 must agree on every write. The cluster tolerates losing 1 master and keeps running. Odd numbers (1,3,5) are always used for control planes.</p></div>
+    <div class="concept-card"><h4>☁️ Cloud-init</h4><p>First-boot VM configuration standard. Injects SSH keys, sets hostname, configures IPs, creates users automatically. Same concept as EC2 user-data on AWS.</p></div>
+    <div class="concept-card"><h4>🔁 Rolling Updates</h4><p>Kubernetes replaces pods one at a time. New pods must pass readiness probes before old ones terminate. The app stays available throughout the entire update process.</p></div>
+    <div class="concept-card"><h4>🏷️ Image Tagging with SHA</h4><p>Every deployment uses the git commit SHA as the image tag. Makes every deployment traceable to exact code and prevents accidental use of stale :latest images.</p></div>
+    <div class="concept-card"><h4>🩺 Health Probes</h4><p>Liveness probes restart unhealthy containers. Readiness probes prevent traffic reaching unready pods. Both configured to hit the /health endpoint every 30 seconds.</p></div>
+    <div class="concept-card"><h4>🔑 Secrets Management</h4><p>Sensitive values never appear in code. They live in GitHub Secrets or terraform.tfvars (git-ignored). The .gitignore file is the first line of defense against leaks.</p></div>
+  </div>
+
+  <div class="next-section">
+    <div class="section-title" style="margin-bottom:0">What's Next — Possible Improvements</div>
+    <div class="next-items">
+      <div class="next-item"><div class="ni-icon">🌐</div><div><strong>Cloudflare Tunnel</strong><p>Expose on a real domain with free SSL. No port forwarding, works behind CGNAT.</p></div></div>
+      <div class="next-item"><div class="ni-icon">🔧</div><div><strong>Jenkins Pipeline</strong><p>Replace or complement GitHub Actions with Jenkins running inside k3s.</p></div></div>
+      <div class="next-item"><div class="ni-icon">📊</div><div><strong>Monitoring Stack</strong><p>Add Prometheus and Grafana to visualize cluster and app metrics in real time.</p></div></div>
+      <div class="next-item"><div class="ni-icon">📦</div><div><strong>Helm Charts</strong><p>Package k8s manifests as a Helm chart for versioned, parameterized deployments.</p></div></div>
+      <div class="next-item"><div class="ni-icon">🔒</div><div><strong>Cert-Manager</strong><p>Automatic TLS certificates for ingress using Let's Encrypt.</p></div></div>
+      <div class="next-item"><div class="ni-icon">💾</div><div><strong>PBS Backups</strong><p>Connect pve12 to your existing PBS at 192.168.1.15 for automated VM backups.</p></div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Built on Lenovo i5-14500T • Proxmox 9.1.1 • k3s v1.32.2 • Terraform 1.14.6 • Ansible 2.20.3 • Docker 29.3.0 • GitHub Actions
+</div>
+
+</body>
+</html>
