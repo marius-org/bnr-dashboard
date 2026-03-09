@@ -118,10 +118,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* FOOTBALL */
-.football-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
-@media(max-width:640px){.football-grid{grid-template-columns:1fr}}
-.football-widget{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.football-widget iframe{display:block;width:100%;border:none}
+.matches-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0}
+@media(max-width:640px){.matches-grid{grid-template-columns:1fr}}
+.match-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem}
+.match-meta{display:flex;align-items:center;justify-content:space-between}
+.match-round{font-family:var(--mono);font-size:0.58rem;color:var(--text3);letter-spacing:0.05em}
+.match-date{font-family:var(--mono);font-size:0.58rem;color:var(--text3)}
+.match-teams{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
+.match-team{display:flex;flex-direction:column;align-items:center;gap:0.3rem;flex:1;min-width:0}
+.match-badge{width:28px;height:28px;object-fit:contain}
+.match-badge-placeholder{width:28px;height:28px;background:var(--border);border-radius:50%}
+.match-name{font-size:0.72rem;font-weight:500;color:var(--text);text-align:center;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.match-score-wrap{display:flex;align-items:center;justify-content:center;gap:0.4rem;flex-shrink:0}
+.match-score{font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--text);min-width:18px;text-align:center}
+.match-score-sep{font-family:var(--mono);font-size:0.8rem;color:var(--text3)}
+.match-vs{font-family:var(--mono);font-size:0.65rem;color:var(--text3);padding:0.2rem 0.5rem;border:1px solid var(--border);border-radius:4px}
+.match-status{text-align:center}
+.match-status span{font-family:var(--mono);font-size:0.58rem;padding:0.15rem 0.5rem;border-radius:3px}
+.status-live{background:#fef2f2;color:#dc2626;font-weight:600}
+.status-fin{background:#f0fdf4;color:#16a34a}
+.status-sched{background:#f5f5f5;color:var(--text3)}
+.matches-empty{font-family:var(--mono);font-size:0.75rem;color:var(--text3);padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+/* sidebar matches */
+.sb-match{display:flex;flex-direction:column;gap:0.25rem;padding:0.6rem 0;border-bottom:1px solid var(--border)}
+.sb-match:last-child{border-bottom:none}
+.sb-match-teams{font-size:0.75rem;font-weight:500;color:var(--text)}
+.sb-match-info{font-family:var(--mono);font-size:0.6rem;color:var(--text3)}
 
 /* FOOTER */
 .footer{background:var(--surface);border-top:1px solid var(--border);padding:1.2rem 1.5rem}
@@ -230,28 +252,51 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
 
     <!-- FOOTBALL -->
     <div class="section-head" style="margin-top:1.5rem">
-      <h2>⚽ Fotbal</h2>
+      <h2>⚽ SuperLiga România</h2>
+      <span class="count">Meciuri următoare</span>
     </div>
-    <div class="football-grid">
-      <div class="football-widget">
-        <div class="widget-head">SuperLiga România</div>
-        <div style="padding:0.5rem">
-          <div class="scoreaxis-widget" style="width:auto;height:auto;font-size:13px;background-color:#ffffff;color:#1a1a1a;border:1px solid #e0e0e0;overflow:auto;border-radius:4px">
-            <script src="https://widgets.scoreaxis.com/api/football/league-table/474?lang=ro&teamLogo=1&tableLines=1&homeAway=0&header=1&position=1&goals=1&gamesCount=1&diff=1&winCount=1&drawCount=1&loseCount=1&lastGames=1&points=1&teamsLimit=all&links=1&font=inter&fontSize=13&rowDensity=90&widgetWidth=auto&widgetHeight=auto&bodyColor=%23ffffff&textColor=%231a1a1a&linkColor=%231a1a1a&borderColor=%23e0e0e0&tabColor=%23f5f5f5" async></script>
-            <div style="padding:4px 10px;font-size:0.6rem;color:#999">Date live de la <a href="https://www.scoreaxis.com/" style="color:#999">Scoreaxis</a></div>
+    {% if matches %}
+    <div class="matches-grid">
+      {% for m in matches %}
+      <div class="match-card">
+        <div class="match-meta">
+          <span class="match-round">{% if m.round %}Etapa {{ m.round }}{% endif %}</span>
+          <span class="match-date">{{ m.date }} {% if m.time %}· {{ m.time }}{% endif %}</span>
+        </div>
+        <div class="match-teams">
+          <div class="match-team">
+            {% if m.home_badge %}<img class="match-badge" src="{{ m.home_badge }}" alt="{{ m.home }}" onerror="this.style.display='none'">{% else %}<div class="match-badge-placeholder"></div>{% endif %}
+            <span class="match-name">{{ m.home }}</span>
+          </div>
+          <div class="match-score-wrap">
+            {% if m.score_h is not none and m.score_a is not none %}
+              <span class="match-score">{{ m.score_h }}</span>
+              <span class="match-score-sep">:</span>
+              <span class="match-score">{{ m.score_a }}</span>
+            {% else %}
+              <span class="match-vs">vs</span>
+            {% endif %}
+          </div>
+          <div class="match-team">
+            {% if m.away_badge %}<img class="match-badge" src="{{ m.away_badge }}" alt="{{ m.away }}" onerror="this.style.display='none'">{% else %}<div class="match-badge-placeholder"></div>{% endif %}
+            <span class="match-name">{{ m.away }}</span>
           </div>
         </div>
-      </div>
-      <div class="football-widget">
-        <div class="widget-head">UEFA Champions League</div>
-        <div style="padding:0.5rem">
-          <div class="scoreaxis-widget" style="width:auto;height:auto;font-size:13px;background-color:#ffffff;color:#1a1a1a;border:1px solid #e0e0e0;overflow:auto;border-radius:4px">
-            <script src="https://widgets.scoreaxis.com/api/football/league-table/3?lang=ro&teamLogo=1&tableLines=1&homeAway=0&header=1&position=1&goals=1&gamesCount=1&diff=1&winCount=1&drawCount=1&loseCount=1&lastGames=1&points=1&teamsLimit=all&links=1&font=inter&fontSize=13&rowDensity=90&widgetWidth=auto&widgetHeight=auto&bodyColor=%23ffffff&textColor=%231a1a1a&linkColor=%231a1a1a&borderColor=%23e0e0e0&tabColor=%23f5f5f5" async></script>
-            <div style="padding:4px 10px;font-size:0.6rem;color:#999">Date live de la <a href="https://www.scoreaxis.com/" style="color:#999">Scoreaxis</a></div>
-          </div>
+        <div class="match-status">
+          {% if m.status == 'Match Finished' %}
+            <span class="status-fin">Final</span>
+          {% elif m.status and 'live' in m.status|lower %}
+            <span class="status-live">● Live</span>
+          {% else %}
+            <span class="status-sched">{{ m.status if m.status else 'Programat' }}</span>
+          {% endif %}
         </div>
       </div>
+      {% endfor %}
     </div>
+    {% else %}
+    <div class="matches-empty">Nu sunt meciuri disponibile momentan.</div>
+    {% endif %}
 
   </div>
 
@@ -289,12 +334,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font
     </div>
 
     <div class="sidebar-widget">
-      <div class="widget-head">⚽ SuperLiga Clasament</div>
-      <div style="padding:0.5rem">
-        <div class="scoreaxis-widget" style="width:auto;height:auto;font-size:12px;background-color:#ffffff;color:#1a1a1a;border:1px solid #e0e0e0;overflow:auto;border-radius:4px">
-          <script src="https://widgets.scoreaxis.com/api/football/league-table/474?lang=ro&teamLogo=1&tableLines=1&homeAway=0&header=0&position=1&goals=0&gamesCount=1&diff=0&winCount=0&drawCount=0&loseCount=0&lastGames=1&points=1&teamsLimit=all&links=1&font=inter&fontSize=12&rowDensity=85&widgetWidth=auto&widgetHeight=auto&bodyColor=%23ffffff&textColor=%231a1a1a&linkColor=%231a1a1a&borderColor=%23e0e0e0&tabColor=%23f5f5f5" async></script>
-          <div style="padding:4px 10px;font-size:0.6rem;color:#999">Date live de la <a href="https://www.scoreaxis.com/" style="color:#999">Scoreaxis</a></div>
-        </div>
+      <div class="widget-head">⚽ Meciuri Următoare</div>
+      <div class="widget-body" style="padding:0.5rem 0.9rem">
+        {% if matches %}
+          {% for m in matches[:5] %}
+          <div class="sb-match">
+            <div class="sb-match-teams">{{ m.home }} vs {{ m.away }}</div>
+            <div class="sb-match-info">{{ m.date }}{% if m.time %} · {{ m.time }}{% endif %}{% if m.round %} · Etapa {{ m.round }}{% endif %}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text3);padding:0.5rem 0">Nu sunt meciuri disponibile.</div>
+        {% endif %}
       </div>
     </div>
 

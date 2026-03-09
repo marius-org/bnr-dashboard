@@ -9,67 +9,94 @@ from zoneinfo import ZoneInfo
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-BNR_URL = "https://www.bnr.ro/nbrfxrates.xml"
-DIGI24_URL = "https://www.digi24.ro/rss"
-
-CURRENCIES = ["EUR", "USD", "GBP", "CHF", "HUF", "MDL", "XAU", "XDR"]
+tz = ZoneInfo("Europe/Bucharest")
 
 async def fetch_bnr():
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            response = await client.get(BNR_URL)
-            root = ET.fromstring(response.text)
-            ns = {"bnr": "http://www.bnr.ro/xsd"}
-            rates = {}
-            date = ""
-            for cube in root.findall(".//bnr:Cube", ns):
-                cube_date = cube.get("date")
-                if cube_date:
-                    date = cube_date
-                for rate in cube.findall("bnr:Rate", ns):
-                    currency = rate.get("currency")
-                    multiplier = int(rate.get("multiplier", 1))
-                    if currency in CURRENCIES and rate.text:
-                        value = float(rate.text) / multiplier
-                        rates[currency] = round(value, 4)
-            return rates, date
-    except Exception as e:
-        return {}, str(e)
+    url = "https://www.bnr.ro/nbrfxrates.xml"
+    async with httpx.AsyncClient() as client:
+        r = await client.get(url, timeout=10)
+    root = ET.fromstring(r.text)
+    ns = {"bnr": "http://www.bnr.ro/xsd"}
+    rates = {}
+    gold_ron = None
+    xdr_ron = None
+    date = root.find(".//bnr:PublishingDate", ns)
+    bnr_date = date.text if date is not None else ""
+    for cube in root.findall(".//bnr:Rate", ns):
+        currency = cube.attrib.get("currency", "")
+        multiplier = int(cube.attrib.get("multiplier", 1))
+        try:
+            value = round(float(cube.text) / multiplier, 4)
+        except:
+            continue
+        if currency == "XAU":
+            gold_ron = value
+        elif currency == "XDR":
+            xdr_ron = value
+        else:
+            rates[currency] = value
+    return rates, gold_ron, xdr_ron, bnr_date
 
 async def fetch_news():
+    url = "https://www.digi24.ro/rss"
     try:
-        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
-            response = await client.get(DIGI24_URL)
-            root = ET.fromstring(response.content)
-            news = []
-            for item in root.findall(".//item")[:5]:
-                title = item.findtext("title", "").strip()
-                link = item.findtext("link", "").strip()
-                pub_date = item.findtext("pubDate", "").strip()
-                if title:
-                    news.append({
-                        "title": title,
-                        "link": link,
-                        "date": pub_date
-                    })
-            return news
-    except Exception as e:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url, timeout=10)
+        root = ET.fromstring(r.content)
+        items = []
+        for item in root.findall(".//item")[:10]:
+            title = item.findtext("title", "")
+            link  = item.findtext("link", "#")
+            date  = item.findtext("pubDate", "")
+            items.append({"title": title, "link": link, "date": date})
+        return items
+    except:
+        return []
+
+async def fetch_football():
+    # TheSportsDB free API - no key needed
+    # Liga 1 Romania league ID: 4683
+    # Returns next 15 events
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(
+                "https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4683",
+                timeout=10
+            )
+        data = r.json()
+        events = data.get("events") or []
+        matches = []
+        for e in events[:8]:
+            matches.append({
+                "home":     e.get("strHomeTeam", ""),
+                "away":     e.get("strAwayTeam", ""),
+                "date":     e.get("dateEvent", ""),
+                "time":     e.get("strTime", "")[:5] if e.get("strTime") else "",
+                "round":    e.get("intRound", ""),
+                "score_h":  e.get("intHomeScore"),
+                "score_a":  e.get("intAwayScore"),
+                "status":   e.get("strStatus", ""),
+                "home_badge": e.get("strHomeTeamBadge", ""),
+                "away_badge": e.get("strAwayTeamBadge", ""),
+            })
+        return matches
+    except:
         return []
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    rates, bnr_date = await fetch_bnr()
+    rates, gold_ron, xdr_ron, bnr_date = await fetch_bnr()
     news = await fetch_news()
-    gold_ron = rates.pop("XAU", None)
-    xdr_ron = rates.pop("XDR", None)
+    matches = await fetch_football()
     return templates.TemplateResponse("index.html", {
-        "request": request,
-        "rates": rates,
-        "bnr_date": bnr_date,
+        "request":  request,
+        "rates":    rates,
         "gold_ron": gold_ron,
-        "xdr_ron": xdr_ron,
-        "news": news,
-        "updated": datetime.now(ZoneInfo("Europe/Bucharest")).strftime("%d %b %Y, %H:%M")
+        "xdr_ron":  xdr_ron,
+        "bnr_date": bnr_date,
+        "updated":  datetime.now(tz).strftime("%d %b %Y, %H:%M"),
+        "news":     news,
+        "matches":  matches,
     })
 
 @app.get("/health")
