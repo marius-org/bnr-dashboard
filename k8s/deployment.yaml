@@ -1,8 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bnr-dashboard
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bnr-dashboard
-  namespace: default
+  namespace: bnr-dashboard
   labels:
     app: bnr-dashboard
 spec:
@@ -39,3 +44,16 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bnr-dashboard
+  namespace: bnr-dashboard
+spec:
+  type: ClusterIP
+  selector:
+    app: bnr-dashboard
+  ports:
+    - port: 80
+      targetPort: 8080
