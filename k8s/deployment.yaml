@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: bnr-dashboard
-          image: mariuseu/bnr-dashboard:latest
+          image: mariuseu/bnr-dashboard:13
           ports:
             - containerPort: 8080
           resources:
